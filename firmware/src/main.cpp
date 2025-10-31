@@ -46,6 +46,16 @@ namespace {
             return values[N / 2];
         }
     }
+
+    String classifyDistance(unsigned long distance){
+        if (distance < 50) {
+            return "Low";
+        } else if (distance < 120) {
+            return "Medium";
+        } else if (distance >= 120) {
+            return "High";
+        }
+    }
 }
 
 void setup() {
@@ -63,11 +73,11 @@ void loop() {
 
         //float medianWindow[MEDIAN_WINDOW_SIZE];
         std::array<float, MEDIAN_WINDOW_SIZE> medianWindow{}; // resolved: no instance of function template "<unnamed>::computeMedianFilter" matches the argument listC/C++(304) test.cpp(66, 29): argument types are: (float [10])
-        for (size_t i=0; i<MEDIAN_WINDOW_SIZE; i++){
+        for (size_t j=0; j<MEDIAN_WINDOW_SIZE; j++){
             const unsigned long distanceCm = readDistance(TRIG_PIN, ECHO_PIN);
-            medianWindow[i] = distanceCm;
-            Serial.print(F("Distance (cm): "));
-            Serial.println(distanceCm);
+            medianWindow[j] = distanceCm;
+            // Serial.print(F("Distance (cm): "));
+            // Serial.println(distanceCm);
         }
 
         float medianValue = computeMedianFilter(medianWindow);
@@ -75,6 +85,12 @@ void loop() {
     }
     float averageValue = computeAverageFilter(averageWindow);
     filteredReadings.push_back(averageValue);
+
+    Serial.print(F("Average Filter (cm): "));
+    Serial.println(averageValue);
+
+    String distanceClassfication = classifyDistance(averageValue);
+    Serial.println(distanceClassfication);
 
     delay(1000);
 }
